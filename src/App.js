@@ -14,7 +14,7 @@ function App() {
   const lotteryAddress = '0x34Ff7116840379e60C005E88752B137ab1a76328';
   const tlAddress = '0x43257e0cBd6De3A840243B738b56C103629C7670';
 
-  const [transferApproveAmount, setTransferApproveAmount] = useState(0);
+
 
   // window.userAddress = null;
   // window.deployedAddress = null;
@@ -102,8 +102,20 @@ function App() {
 
   async function approveHandler() {
     await tl.approve(lotteryAddress, transferApproveAmount, { from: window.userAddress });
-
   }
+
+  async function depositHandler() {
+    await tl.depositTl(lotteryAddress, depositAmount, { from: window.userAddress });
+  }
+
+  async function withdrawHandler() {
+    await tl.withdrawTL(lotteryAddress, withdrawAmount, { from: window.userAddress });
+  }
+
+  const [transferApproveAmount, setTransferApproveAmount] = useState(0);
+  const [depositAmount, setDepositAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
+
 
   return (
     <div className="flex w-full h-fit justify-center content-center items-center space-x-4">
@@ -126,12 +138,38 @@ function App() {
                 <label>
                   Amount:
                   <input 
-                    type="text" 
+                    type="number" 
                     value={transferApproveAmount}
                     onChange={(e) => setTransferApproveAmount(e.target.value)}
                     />
                 </label>
                 <input type="submit" value="Approve" />
+              </form>
+            </div>
+            <div>
+              <form onSubmit={depositHandler}>
+                <label>
+                  Amount:
+                  <input 
+                    type="number" 
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(e.target.value)}
+                    />
+                </label>
+                <input type="submit" value="Deposit TL" />
+              </form>
+            </div>
+            <div>
+              <form onSubmit={withdrawHandler}>
+                <label>
+                  Amount:
+                  <input 
+                    type="number" 
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    />
+                </label>
+                <input type="submit" value="Withdraw TL" />
               </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
