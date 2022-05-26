@@ -105,16 +105,22 @@ function App() {
   }
 
   async function depositHandler() {
-    await tl.depositTl(lotteryAddress, depositAmount, { from: window.userAddress });
+    await lotteryContract.depositTl(depositAmount);
   }
 
   async function withdrawHandler() {
-    await tl.withdrawTL(lotteryAddress, withdrawAmount, { from: window.userAddress });
+    await lotteryContract.withdrawTL(withdrawAmount);
+  }
+
+  async function randomNumberHandler() {
+    const number = await lotteryContract.random();
+    setRandomNumber(number);
   }
 
   const [transferApproveAmount, setTransferApproveAmount] = useState(0);
   const [depositAmount, setDepositAmount] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [randomNumber, setRandomNumber] = useState(0);
 
 
   return (
@@ -171,6 +177,14 @@ function App() {
                 </label>
                 <input type="submit" value="Withdraw TL" />
               </form>
+            </div>
+            <div>
+            <button onClick={randomNumberHandler}>
+                Create a Random Number
+            </button>
+            <label>
+              {randomNumber}
+            </label>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
             <p id="activeContractAddress-producer" className="text-gray-600"></p>  
