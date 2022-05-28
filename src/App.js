@@ -4,7 +4,9 @@ import tlAbi from './TLabi.json';
 import lotteryAbi from './lotteryAbi.json'
 
 
+
 function App() {
+
   // const [account, setAccount] = useState(); // state variable to set account.
   
   ///< Selected user address
@@ -82,14 +84,30 @@ function App() {
     //document.getElementById("hideButton").classList.remove("hidden");
   }
 
+  async function getInfoFromContract(){
+    // Update the document title using the browser API
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, provider);
+
+    const tokenName = await tlContract.name();
+    const tokenSymbol = await tlContract.symbol();
+    const tokenSupply = await tlContract.totalSupply();
+
+    console.log("tokenName ",tokenName);
+    console.log("symbol ", tokenSymbol);
+    console.log("supply ", tokenSupply.toString());
+ 
+  }
+
   async function getAccountBalance() {
    if (window.web3) {
       try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, provider);
+    
+        const balance = await tlContract.balanceOf(window.userAddress);
 
-        const balance = await tl.balanceOf(window.userAddress);
-        // const coolNumber = await window.contract.methods.name().call();
-      
-        console.log(ethers.providers.Web3Provider.fromWei(balance.toNumber(), "ether" ) );
+        console.log("Balance of the user: ", balance.toString() );
       
         showAccount(); 
       } catch (error) {
@@ -101,6 +119,25 @@ function App() {
   }
 
   async function approveHandler() {
+
+       if (window.web3) {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const lotteryContract = new ethers.Contract('0x34Ff7116840379e60C005E88752B137ab1a76328', lotteryAbi, provider);
+    
+        const balance = await lotteryContract.approve('0x34Ff7116840379e60C005E88752B137ab1a76328', window.userAddress);
+
+        console.log("Balance of the user: ", balance.toString() );
+      
+        showAccount(); 
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      alert("No ETH brower extension detected.");
+    }
+
+
     await tl.approve(lotteryAddress, transferApproveAmount, { from: window.userAddress });
   }
 
@@ -135,6 +172,13 @@ function App() {
                 <p id="userAddress" className="text-gray-600"></p>
                 <p id="activeContractAddress-producer" className="text-gray-600"></p>
             </div>
+
+            <button onClick={getInfoFromContract}
+                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
+                Get Info
+            </button>
+
+
             <button onClick={getAccountBalance}
                 className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
                 Get Balance
