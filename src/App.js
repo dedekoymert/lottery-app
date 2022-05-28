@@ -5,13 +5,14 @@ import lotteryAbi from './lotteryAbi.json'
 
 
 
+
 function App() {
 
   // const [account, setAccount] = useState(); // state variable to set account.
   
   ///< Selected user address
   window.userAddress = null;
-  const [tl, setTl] = useState();
+  //const [tl, setTl] = useState();
   const [lotteryContract, setLotteryContract] = useState();
   const lotteryAddress = '0x34Ff7116840379e60C005E88752B137ab1a76328';
   const tlAddress = '0x43257e0cBd6De3A840243B738b56C103629C7670';
@@ -26,11 +27,11 @@ function App() {
     // Update the document title using the browser API
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     // const x = await provider.send("eth_requestAccounts", []);
-    const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
+   // const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
     const lotteryContractAbi = new ethers.Contract(lotteryAddress, lotteryAbi, provider);
 
     setLotteryContract(lotteryContractAbi);
-    setTl(tlContract);
+    //setTl(tlContract);
   },[]);
 
   function showAddress() {
@@ -84,10 +85,10 @@ function App() {
     //document.getElementById("hideButton").classList.remove("hidden");
   }
 
-  async function getInfoFromContract(){
+  async function getInfoFromContract() {
     // Update the document title using the browser API
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, provider);
+    const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
 
     const tokenName = await tlContract.name();
     const tokenSymbol = await tlContract.symbol();
@@ -96,6 +97,7 @@ function App() {
     console.log("tokenName ",tokenName);
     console.log("symbol ", tokenSymbol);
     console.log("supply ", tokenSupply.toString());
+
  
   }
 
@@ -118,27 +120,60 @@ function App() {
     }
   }
 
-  async function approveHandler() {
+ /*  async function approveTrial() {
 
-       if (window.web3) {
+      if (window.web3) {
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const lotteryContract = new ethers.Contract('0x34Ff7116840379e60C005E88752B137ab1a76328', lotteryAbi, provider);
-    
-        const balance = await lotteryContract.approve('0x34Ff7116840379e60C005E88752B137ab1a76328', window.userAddress);
 
-        console.log("Balance of the user: ", balance.toString() );
       
-        showAccount(); 
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+        //await provider.send("eth_requestAccounts",[]);
+        const signer = await provider.getSigner();
+
+        const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, signer);
+       
+
+      await tlContract.approve('0x34Ff7116840379e60C005E88752B137ab1a76328', "1000000000000000000000");
+
+
       } catch (error) {
         console.error(error);
       }
     } else {
-      alert("No ETH brower extension detected.");
+      alert("Change the error");
     }
 
 
-    await tl.approve(lotteryAddress, transferApproveAmount, { from: window.userAddress });
+    //await tl.approve(lotteryAddress, transferApproveAmount, { from: window.userAddress });
+  }
+*/
+
+  async function approveHandler() {
+
+      if (window.web3) {
+      try {
+      
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+        //await provider.send("eth_requestAccounts",[]);
+        const signer = await provider.getSigner();
+
+        const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, signer);
+   
+   
+       await tlContract.approve('0x34Ff7116840379e60C005E88752B137ab1a76328', transferApproveAmount); // we should change it to take it from the input
+
+       console.log("we got into this point-3 in approve")
+
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      alert("Change the error");
+    }
+
+
   }
 
   async function depositHandler() {
@@ -219,7 +254,7 @@ function App() {
                 <label>
                   Amount:
                   <input 
-                    type="number" 
+                    type="text" 
                     value={transferApproveAmount}
                     required={true}
                     onChange={(e) => setTransferApproveAmount(e.target.value)}
