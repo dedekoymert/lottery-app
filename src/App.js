@@ -13,7 +13,7 @@ function App() {
   ///< Selected user address
   window.userAddress = null;
   //const [tl, setTl] = useState();
-  const [lotteryContract, setLotteryContract] = useState();
+  //const [lotteryContract, setLotteryContract] = useState();
   const lotteryAddress = '0x34Ff7116840379e60C005E88752B137ab1a76328';
   const tlAddress = '0x43257e0cBd6De3A840243B738b56C103629C7670';
 
@@ -25,12 +25,12 @@ function App() {
 
   useEffect(() => {
     // Update the document title using the browser API
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    //const provider = new ethers.providers.Web3Provider(window.ethereum);
     // const x = await provider.send("eth_requestAccounts", []);
    // const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
-    const lotteryContractAbi = new ethers.Contract(lotteryAddress, lotteryAbi, provider);
+   // const lotteryContractAbi = new ethers.Contract(lotteryAddress, lotteryAbi, provider);
 
-    setLotteryContract(lotteryContractAbi);
+    //setLotteryContract(lotteryContractAbi);
     //setTl(tlContract);
   },[]);
 
@@ -62,6 +62,7 @@ function App() {
             throw Error("No account selected!");
           });
         window.userAddress = selectedAccount;
+        setUserAddress(selectedAccount);
         window.localStorage.setItem("userAddress", selectedAccount);
         showAddress();
       } catch (error) {
@@ -105,9 +106,12 @@ function App() {
    if (window.web3) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, provider);
+
+        
+        const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
+
     
-        const balance = await tlContract.balanceOf(window.userAddress);
+        const balance = await tlContract.balanceOf(userAddress);
 
         console.log("Balance of the user: ", balance.toString() );
       
@@ -120,7 +124,7 @@ function App() {
     }
   }
 
- /*  async function approveTrial() {
+   async function approveTrial() {
 
       if (window.web3) {
       try {
@@ -134,7 +138,7 @@ function App() {
         const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, signer);
        
 
-      await tlContract.approve('0x34Ff7116840379e60C005E88752B137ab1a76328', "1000000000000000000000");
+      await tlContract.approve(tlAddress, "1000000000000000000000");
 
 
       } catch (error) {
@@ -147,26 +151,27 @@ function App() {
 
     //await tl.approve(lotteryAddress, transferApproveAmount, { from: window.userAddress });
   }
-*/
+
 
   async function approveHandler() {
 
       if (window.web3) {
-      try {
+        try {
+          setTransferApproveAmount(transferApproveAmount);
       
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
        
         //await provider.send("eth_requestAccounts",[]);
-        const signer = await provider.getSigner();
+          const signer =  provider.getSigner();
 
-        const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, signer);
+          const tlContract = new ethers.Contract(tlAddress, tlAbi, signer);
    
    
-       await tlContract.approve('0x34Ff7116840379e60C005E88752B137ab1a76328', transferApproveAmount); // we should change it to take it from the input
+          await tlContract.approve(lotteryAddress, this.transferApproveAmount); 
 
-       console.log("we got into this point-3 in approve")
+          console.log("we got into this point-3 in approve")
 
-      } catch (error) {
+        } catch (error) {
         console.error(error);
       }
     } else {
@@ -177,19 +182,57 @@ function App() {
   }
 
   async function depositHandler() {
-    await lotteryContract.depositTl(depositAmount);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log("chech1 ", provider);
+
+    //await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    console.log("chech2 ", provider);
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+
+   await lotteryContract.depositTL(this.depositAmount); 
+   
+    console.log("amonut ", this.depositAmount);
+
+   console.log("we got into this point-3 in approve")
+
+  //  await lotteryContract.depositTl(depositAmount);
   }
 
   async function withdrawHandler() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     await lotteryContract.withdrawTL(withdrawAmount);
   }
 
-  async function randomNumberHandler() {
-    const number = await lotteryContract.random();
-    setRandomNumber(number);
+  async function randomNumberHandler()  {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    //await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    const number =  await lotteryContract.random();
+
+    console.log("random number: ", number.toString());
+
+    setRandomNumber(number.toString());
   }
   
   async function hashNumberHandler() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     if(randomNumber !== undefined) {
       const hash = await lotteryContract.hash_your_random_number(randomNumber);
       setHashedNumber(hash);
@@ -197,24 +240,49 @@ function App() {
   }
 
   async function buyTicketHandler() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     if(hashedNumber !== undefined) {
       await lotteryContract.buyTicket(hashedNumber);
     }
   }
 
   async function collectTicketRefundHandler() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     await lotteryContract.collectTicketRefund(ticketRefund);   
   }
 
   async function revealRandomNumberHandler() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     await lotteryContract.revealRndNumber(revealedRandomNumber);   
   }
 
   async function getLastOwnedHandler() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     const ticket = await lotteryContract.revealRndNumber(revealedRandomNumber);   
     setTicketLastOwned(ticket);
   }
 
+  const [userAddress, setUserAddress] = useState();
   const [transferApproveAmount, setTransferApproveAmount] = useState();
   const [depositAmount, setDepositAmount] = useState();
   const [withdrawAmount, setWithdrawAmount] = useState();
@@ -244,6 +312,11 @@ function App() {
                 Get Info
             </button>
 
+            <button onClick={approveTrial}
+                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
+                Approve Trial
+            </button>
+
 
             <button onClick={getAccountBalance}
                 className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
@@ -263,6 +336,9 @@ function App() {
                 <input type="submit" value="Approve" />
               </form>
             </div>
+            <label>
+                " {transferApproveAmount} "
+              </label>
             <div>
               <form onSubmit={depositHandler}>
                 <label>
