@@ -116,11 +116,42 @@ function App() {
     const number = await lotteryContract.random();
     setRandomNumber(number);
   }
+  
+  async function hashNumberHandler() {
+    if(randomNumber !== undefined) {
+      const hash = await lotteryContract.hash_your_random_number(randomNumber);
+      setHashedNumber(hash);
+    }
+  }
 
-  const [transferApproveAmount, setTransferApproveAmount] = useState(0);
-  const [depositAmount, setDepositAmount] = useState(0);
-  const [withdrawAmount, setWithdrawAmount] = useState(0);
-  const [randomNumber, setRandomNumber] = useState(0);
+  async function buyTicketHandler() {
+    if(hashedNumber !== undefined) {
+      await lotteryContract.buyTicket(hashedNumber);
+    }
+  }
+
+  async function collectTicketRefundHandler() {
+    await lotteryContract.collectTicketRefund(ticketRefund);   
+  }
+
+  async function revealRandomNumberHandler() {
+    await lotteryContract.revealRndNumber(revealedRandomNumber);   
+  }
+
+  async function getLastOwnedHandler() {
+    const ticket = await lotteryContract.revealRndNumber(revealedRandomNumber);   
+    setTicketLastOwned(ticket);
+  }
+
+  const [transferApproveAmount, setTransferApproveAmount] = useState();
+  const [depositAmount, setDepositAmount] = useState();
+  const [withdrawAmount, setWithdrawAmount] = useState();
+  const [randomNumber, setRandomNumber] = useState();
+  const [hashedNumber, setHashedNumber] = useState();
+  const [ticketRefund, setTicketRefund] = useState();
+  const [revealedRandomNumber, setRevealedRandomNumber] = useState();
+  const [lotteryNoLastOwned, setLotteryNoLastOwned] = useState();
+  const [ticketLastOwned, setTicketLastOwned] = useState();
 
 
   return (
@@ -146,6 +177,7 @@ function App() {
                   <input 
                     type="number" 
                     value={transferApproveAmount}
+                    required={true}
                     onChange={(e) => setTransferApproveAmount(e.target.value)}
                     />
                 </label>
@@ -159,6 +191,7 @@ function App() {
                   <input 
                     type="number" 
                     value={depositAmount}
+                    required={true}
                     onChange={(e) => setDepositAmount(e.target.value)}
                     />
                 </label>
@@ -172,19 +205,83 @@ function App() {
                   <input 
                     type="number" 
                     value={withdrawAmount}
+                    required={true}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     />
                 </label>
                 <input type="submit" value="Withdraw TL" />
               </form>
             </div>
+            <hr/>
             <div>
-            <button onClick={randomNumberHandler}>
-                Create a Random Number
-            </button>
-            <label>
-              {randomNumber}
-            </label>
+              <button onClick={randomNumberHandler}>
+                  Generate a random number
+              </button>
+              <label>
+                " {randomNumber} "
+              </label>
+            </div>
+            <div>
+              <button onClick={hashNumberHandler}>
+                  Hash your random number
+              </button>
+              <label>
+                " {hashedNumber} "
+              </label>
+            </div>
+            <div>
+              <form onSubmit={buyTicketHandler}>
+                <label>
+                  Your hashed random number: " " {hashedNumber}
+                </label>
+                <input type="submit" value="Buy ticket" />
+              </form>
+            </div>
+            <hr/>
+            <div>
+              <form onSubmit={collectTicketRefundHandler}>
+              <label>
+                Ticket No:
+                <input 
+                  type="text" 
+                  value={ticketRefund}
+                  required={true}
+                  onChange={(e) => setTicketRefund(e.target.value)}
+                  />
+              </label>
+              <input type="submit" value="Collect ticket refund" />
+              </form>
+            </div>
+            <div>
+              <form onSubmit={revealRandomNumberHandler}>
+              <label>
+                Random number:
+                <input 
+                  type="number" 
+                  value={revealedRandomNumber}
+                  required={true}
+                  onChange={(e) => setRevealedRandomNumber(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Reveal random number" />
+              </form>
+            </div>
+            <div>
+              <form onSubmit={getLastOwnedHandler}>
+              <label>
+                Lottery No:
+                <input 
+                  type="number" 
+                  value={lotteryNoLastOwned}
+                  required={true}
+                  onChange={(e) => setLotteryNoLastOwned(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Get last owned ticket" />
+              <label>
+                Ticket No: {ticketLastOwned}
+              </label>
+              </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
             <p id="activeContractAddress-producer" className="text-gray-600"></p>  
