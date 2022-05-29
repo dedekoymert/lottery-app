@@ -296,7 +296,7 @@ function App() {
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
-    const ticket = await lotteryContract.getIthOwnedTicketNo(ownedIndex, ticketIthOwned);
+    const ticket = await lotteryContract.getIthOwnedTicketNo(ownedIndex,lotteryNoIthOwned);
     setTicketIthOwned(ticket.toString());
   }
 
