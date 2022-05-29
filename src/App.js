@@ -515,7 +515,7 @@ function App() {
                 </label>
                 <input type="submit" value="Check if ticket won" />
                 <label>
-                  Amount won: {ticketLastOwned}
+                  Amount won: {ticketIthOwned}
                 </label>
               </form>
             </div>
