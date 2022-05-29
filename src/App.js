@@ -333,6 +333,17 @@ function App() {
     setAmountIthWinning(result[1]);
   }
 
+  async function getLotteryNoHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    const lotteryNumber = await lotteryContract.getLotteryNo(unixTime);  
+    setLotteryNo(lotteryNumber);
+  }
+
   const [userAddress, setUserAddress] = useState('');
   const [transferApproveAmount, setTransferApproveAmount] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
@@ -354,6 +365,8 @@ function App() {
   const [ticketIthWinning, setTicketIthOwnedWinning] = useState('');
   const [amountIthWinning, setAmountIthWinning] = useState('');
   const [winnerIndex, setWinnerIndex] = useState('');
+  const [unixTime, setUnixTime] = useState('');
+  const [lotteryNo, setLotteryNo] = useState('');
 
 
   return (
@@ -586,6 +599,23 @@ function App() {
               <label>
                 Amount: {amountIthWinning}
               </label>
+              </form>
+            </div>
+            <div>
+              <form onSubmit={getLotteryNoHandler}>
+                <label>
+                  Unix Time:
+                  <input 
+                    type="number" 
+                    value={unixTime}
+                    required={true}
+                    onChange={(e) => setUnixTime(e.target.value)}
+                    />
+                </label>
+                <input type="submit" value="Get lottery no" />
+                <label>
+                  Lottery No: {lotteryNo}
+                </label>
               </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
