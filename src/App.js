@@ -344,6 +344,17 @@ function App() {
     setLotteryNo(lotteryNumber);
   }
 
+  async function getTotalLotteryMoneyCollectedHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    const amount = await lotteryContract.getTotalLotteryMoneyCollected(lotteryNoMoneyCollected);
+    setMoneyCollected(amount);
+  }
+
   const [userAddress, setUserAddress] = useState('');
   const [transferApproveAmount, setTransferApproveAmount] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
@@ -368,6 +379,8 @@ function App() {
   const [unixTime, setUnixTime] = useState('');
   const [lotteryNo, setLotteryNo] = useState('');
 
+  const [lotteryNoMoneyCollected, setLotteryNoMoneyCollected] = useState('');
+  const [moneyCollected, setMoneyCollected] = useState('');
 
   return (
     <div className="flex w-full h-fit justify-center content-center items-center space-x-4">
@@ -563,7 +576,7 @@ function App() {
                 <label>
                   Ticket No:
                   <input 
-                    type="number" 
+                    type="text" 
                     value={ticketCollectPrize}
                     required={true}
                     onChange={(e) => setTicketCollectPrize(e.target.value)}
@@ -616,6 +629,23 @@ function App() {
                 <label>
                   Lottery No: {lotteryNo}
                 </label>
+              </form>
+            </div>
+            <div>
+              <form onSubmit={getTotalLotteryMoneyCollectedHandler}>
+              <label>
+                Lottery No:
+                <input 
+                  type="number" 
+                  value={lotteryNoMoneyCollected}
+                  required={true}
+                  onChange={(e) => setLotteryNoMoneyCollected(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Get total money collected" />
+              <label>
+                Amount: {moneyCollected}
+              </label>
               </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
