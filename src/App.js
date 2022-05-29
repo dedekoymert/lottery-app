@@ -23,16 +23,7 @@ function App() {
   // window.deployedAddress = null;
   // window.contract = null;
 
-  useEffect(() => {
-    // Update the document title using the browser API
-    //const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // const x = await provider.send("eth_requestAccounts", []);
-   // const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
-   // const lotteryContractAbi = new ethers.Contract(lotteryAddress, lotteryAbi, provider);
 
-    //setLotteryContract(lotteryContractAbi);
-    //setTl(tlContract);
-  },[]);
 
   function showAddress() {
     if (!window.userAddress) {
@@ -133,14 +124,14 @@ function App() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
       
         //await provider.send("eth_requestAccounts",[]);
-        const signer = await provider.getSigner();
+        const signer =   provider.getSigner();
 
-        const tlContract = new ethers.Contract('0x43257e0cBd6De3A840243B738b56C103629C7670', tlAbi, signer);
+        const tlContract = new ethers.Contract(tlAddress, tlAbi, signer);
        
 
-      await tlContract.approve(tlAddress, "1000000000000000000000");
+      await tlContract.approve(lotteryAddress, "1000000000000000000000");
 
-
+        
       } catch (error) {
         console.error(error);
       }
@@ -157,19 +148,18 @@ function App() {
 
       if (window.web3) {
         try {
-          setTransferApproveAmount(transferApproveAmount);
-      
+          
           const provider = new ethers.providers.Web3Provider(window.ethereum);
        
         //await provider.send("eth_requestAccounts",[]);
-          const signer =  provider.getSigner();
+          const signer =   provider.getSigner();
 
           const tlContract = new ethers.Contract(tlAddress, tlAbi, signer);
    
    
-          await tlContract.approve(lotteryAddress, this.transferApproveAmount); 
+          await tlContract.approve(lotteryAddress, "1000000000000000000000"); 
 
-          console.log("we got into this point-3 in approve")
+         
 
         } catch (error) {
         console.error(error);
@@ -179,6 +169,34 @@ function App() {
     }
 
 
+  }
+  async function depositTrial() {
+
+    if (window.web3) {
+      try {
+
+      
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+        //await provider.send("eth_requestAccounts",[]);
+        const signer = await provider.getSigner();
+
+        const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+       
+
+        await lotteryContract.depositTL("10"); 
+
+
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      alert("Change the error");
+    }
+
+
+
+  //  await lotteryContract.depositTl(depositAmount);
   }
 
   async function depositHandler() {
@@ -193,7 +211,7 @@ function App() {
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
 
-   await lotteryContract.depositTL(this.depositAmount); 
+   await lotteryContract.depositTL("10"); 
    
     console.log("amonut ", this.depositAmount);
 
@@ -283,7 +301,7 @@ function App() {
   }
 
   const [userAddress, setUserAddress] = useState();
-  const [transferApproveAmount, setTransferApproveAmount] = useState();
+  const [transferApproveAmount, setTransferApproveAmount] = useState('');
   const [depositAmount, setDepositAmount] = useState();
   const [withdrawAmount, setWithdrawAmount] = useState();
   const [randomNumber, setRandomNumber] = useState();
@@ -317,6 +335,11 @@ function App() {
                 Approve Trial
             </button>
 
+            <button onClick={depositTrial}
+                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
+                DEposit Trial
+            </button>
+
 
             <button onClick={getAccountBalance}
                 className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
@@ -336,9 +359,7 @@ function App() {
                 <input type="submit" value="Approve" />
               </form>
             </div>
-            <label>
-                " {transferApproveAmount} "
-              </label>
+          
             <div>
               <form onSubmit={depositHandler}>
                 <label>
