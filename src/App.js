@@ -355,6 +355,16 @@ function App() {
     setMoneyCollected(amount);
   }
 
+  async function getLotteryWinnersHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    await lotteryContract.get_winners(lotteryNoWinners);
+  }
+
   const [userAddress, setUserAddress] = useState('');
   const [transferApproveAmount, setTransferApproveAmount] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
@@ -371,16 +381,15 @@ function App() {
   const [ticketIfWon, setTicketIfWon] = useState('')
   const [ticketWinAmount, setTicketWinAmount] = useState('');
   const [ticketCollectPrize, setTicketCollectPrize] = useState('')
-
   const [lotteryNoIthWinning, setLotteryNoIthWinning] = useState('');
   const [ticketIthWinning, setTicketIthOwnedWinning] = useState('');
   const [amountIthWinning, setAmountIthWinning] = useState('');
   const [winnerIndex, setWinnerIndex] = useState('');
   const [unixTime, setUnixTime] = useState('');
   const [lotteryNo, setLotteryNo] = useState('');
-
   const [lotteryNoMoneyCollected, setLotteryNoMoneyCollected] = useState('');
   const [moneyCollected, setMoneyCollected] = useState('');
+  const [lotteryNoWinners, setLotteryNoWinners] = useState('');
 
   return (
     <div className="flex w-full h-fit justify-center content-center items-center space-x-4">
@@ -646,6 +655,21 @@ function App() {
               <label>
                 Amount: {moneyCollected}
               </label>
+              </form>
+            </div>
+            <hr/>
+            <div>
+              <form onSubmit={getLotteryWinnersHandler}>
+              <label>
+                Lottery No:
+                <input 
+                  type="number" 
+                  value={lotteryNoWinners}
+                  required={true}
+                  onChange={(e) => setLotteryNoWinners(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Get lottery winners" />
               </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
