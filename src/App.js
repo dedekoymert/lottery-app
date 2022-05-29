@@ -173,7 +173,7 @@ function App() {
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
-    await lotteryContract.revealRndNumber(revealedRandomNumber);   
+    await lotteryContract.revealRndNumber(ticketNoReveal, revealedRandomNumber);   
   }
 
   async function getLastOwnedHandler(event) {
@@ -288,6 +288,7 @@ function App() {
   const [lotteryNoMoneyCollected, setLotteryNoMoneyCollected] = useState('');
   const [moneyCollected, setMoneyCollected] = useState('');
   const [lotteryNoWinners, setLotteryNoWinners] = useState('');
+  const [ticketNoReveal, setTicketNoReveal] = useState('');
 
   return (
     <div className="flex w-full h-fit justify-center content-center items-center space-x-4">
@@ -387,6 +388,15 @@ function App() {
             </div>
             <div>
               <form onSubmit={revealRandomNumberHandler}>
+              <label>
+                Ticket no:
+                <input 
+                  type="text" 
+                  value={ticketNoReveal}
+                  required={true}
+                  onChange={(e) => setTicketNoReveal(e.target.value)}
+                />
+              </label>
               <label>
                 Random number:
                 <input 
