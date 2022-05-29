@@ -352,7 +352,7 @@ function App() {
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     const amount = await lotteryContract.getTotalLotteryMoneyCollected(lotteryNoMoneyCollected);
-    setMoneyCollected(amount);
+    setMoneyCollected(amount.toString());
   }
 
   async function getLotteryWinnersHandler(event) {
