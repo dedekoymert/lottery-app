@@ -19,9 +19,6 @@ function App() {
 
 
 
-  // window.userAddress = null;
-  // window.deployedAddress = null;
-  // window.contract = null;
 
 
 
@@ -53,7 +50,7 @@ function App() {
             throw Error("No account selected!");
           });
         window.userAddress = selectedAccount;
-        setUserAddress(selectedAccount);
+        //setUserAddress(selectedAccount);
         window.localStorage.setItem("userAddress", selectedAccount);
         showAddress();
       } catch (error) {
@@ -64,84 +61,11 @@ function App() {
     }
   }
 
-  function showAccount() {
-    if (!window.deployedAddress) {
-      document.getElementById("deployedAddress").innerText = "";
-      document.getElementById("hideButton").classList.add("hidden");
-      return false;
-    }
-
-    document.getElementById(
-      "deployedAddress"
-    ).innerText = `Active User Address: ${window.deployedAddress}`;
-    //document.getElementById("hideButton").classList.remove("hidden");
-  }
-
-  async function getInfoFromContract() {
-    // Update the document title using the browser API
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
-
-    const tokenName = await tlContract.name();
-    const tokenSymbol = await tlContract.symbol();
-    const tokenSupply = await tlContract.totalSupply();
-
-    console.log("tokenName ",tokenName);
-    console.log("symbol ", tokenSymbol);
-    console.log("supply ", tokenSupply.toString());
-
- 
-  }
-
-  async function getAccountBalance() {
-   if (window.web3) {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-        
-        const tlContract = new ethers.Contract(tlAddress, tlAbi, provider);
-
-    
-        const balance = await tlContract.balanceOf(userAddress);
-
-        console.log("Balance of the user: ", balance.toString() );
-      
-        showAccount(); 
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      alert("No ETH brower extension detected.");
-    }
-  }
-
-   async function approveTrial() {
-
-      if (window.web3) {
-      try {
-
-      
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-      
-        //await provider.send("eth_requestAccounts",[]);
-        const signer =   provider.getSigner();
-
-        const tlContract = new ethers.Contract(tlAddress, tlAbi, signer);
-       
-
-      await tlContract.approve(lotteryAddress, "1000000000000000000000");
-
-        
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      alert("Change the error");
-    }
 
 
-    //await tl.approve(lotteryAddress, transferApproveAmount, { from: window.userAddress });
-  }
+
+
+
 
 
   async function approveHandler(event) {
@@ -164,32 +88,6 @@ function App() {
     } else {
       alert("Change the error");
     }
-  }
-  async function depositTrial() {
-
-    if (window.web3) {
-      try {
-
-      
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-      
-        //await provider.send("eth_requestAccounts",[]);
-        const signer = await provider.getSigner();
-
-        const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
-       
-
-        await lotteryContract.depositTL("10"); 
-
-
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      alert("Change the error");
-    }
-
-  //  await lotteryContract.depositTl(depositAmount);
   }
 
   async function depositHandler(event) {
@@ -365,7 +263,7 @@ function App() {
     await lotteryContract.get_winners(lotteryNoWinners);
   }
 
-  const [userAddress, setUserAddress] = useState('');
+  //const [userAddress, setUserAddress] = useState('');
   const [transferApproveAmount, setTransferApproveAmount] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -404,25 +302,6 @@ function App() {
                 <p id="activeContractAddress-producer" className="text-gray-600"></p>
             </div>
 
-            <button onClick={getInfoFromContract}
-                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
-                Get Info
-            </button>
-
-            <button onClick={approveTrial}
-                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
-                Approve Trial
-            </button>
-
-            <button onClick={depositTrial}
-                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
-                DEposit Trial
-            </button>
-
-            <button onClick={getAccountBalance}
-                className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
-                Get Balance
-            </button>
             <div>
               <form onSubmit={approveHandler}>
                 <label>
