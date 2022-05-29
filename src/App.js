@@ -189,8 +189,6 @@ function App() {
       alert("Change the error");
     }
 
-
-
   //  await lotteryContract.depositTl(depositAmount);
   }
 
@@ -287,8 +285,31 @@ function App() {
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
-    const ticket = await lotteryContract.getLastOwnedTicketNo(0);
+    const ticket = await lotteryContract.getLastOwnedTicketNo(lotteryNoLastOwned);
     setTicketLastOwned(ticket.toString());
+  }
+
+  async function getIthOwnedHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    const ticket = await lotteryContract.getIthOwnedTicketNo(ownedIndex, ticketIthOwned);
+    setTicketIthOwned(ticket.toString());
+  }
+
+  async function checkIfTicketWonHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    await provider.send("eth_requestAccounts",[]);
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    const winAmount = await lotteryContract.checkIfTicketWon(ticketIfWon);  
+    setTicketWinAmount(winAmount);
   }
 
   const [userAddress, setUserAddress] = useState('');
@@ -301,6 +322,12 @@ function App() {
   const [revealedRandomNumber, setRevealedRandomNumber] = useState('');
   const [lotteryNoLastOwned, setLotteryNoLastOwned] = useState('');
   const [ticketLastOwned, setTicketLastOwned] = useState('');
+  const [lotteryNoIthOwned, setLotteryNoIthOwned] = useState('');
+  const [ticketIthOwned, setTicketIthOwned] = useState('');
+  const [ownedIndex, setOwnedIndex] = useState('');
+  const [ticketIfWon, setTicketIfWon] = useState('')
+  const [ticketWinAmount, setTicketWinAmount] = useState('');
+
 
 
   return (
@@ -330,7 +357,6 @@ function App() {
                 className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
                 DEposit Trial
             </button>
-
 
             <button onClick={getAccountBalance}
                 className="rounded bg-blue-500 hover:bg-blue-700 py-2 px-4 text-white">
@@ -448,6 +474,49 @@ function App() {
               <label>
                 Ticket No: {ticketLastOwned}
               </label>
+              </form>
+            </div>
+            <div>
+              <form onSubmit={getIthOwnedHandler}>
+              <label>
+                Lottery No:
+                <input 
+                  type="number" 
+                  value={lotteryNoIthOwned}
+                  required={true}
+                  onChange={(e) => setLotteryNoIthOwned(e.target.value)}
+                />
+              </label>
+              <label>
+                Ticket index:
+                <input 
+                  type="number" 
+                  value={ownedIndex}
+                  required={true}
+                  onChange={(e) => setOwnedIndex(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Get ith owned ticket" />
+              <label>
+                Ticket No: {ticketIthOwned}
+              </label>
+              </form>
+            </div>
+            <div>
+              <form onSubmit={checkIfTicketWonHandler}>
+                <label>
+                  Ticket No:
+                  <input 
+                    type="number" 
+                    value={ticketIfWon}
+                    required={true}
+                    onChange={(e) => setTicketIfWon(e.target.value)}
+                    />
+                </label>
+                <input type="submit" value="Check if ticket won" />
+                <label>
+                  Amount won: {ticketLastOwned}
+                </label>
               </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
