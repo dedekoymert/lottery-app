@@ -304,12 +304,33 @@ function App() {
     event.preventDefault();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
        
-    await provider.send("eth_requestAccounts",[]);
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     const winAmount = await lotteryContract.checkIfTicketWon(ticketIfWon);  
     setTicketWinAmount(winAmount);
+  }
+
+  async function collectTicketPrizeHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    await lotteryContract.collectTicketPrize(ticketCollectPrize);  
+  }
+
+  async function getIthWinningTicketHandler(event) {
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+       
+    const signer =  provider.getSigner();
+
+    const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
+    const result = await lotteryContract.getIthWinningTicket(winnerIndex, lotteryNoIthWinning);
+    setTicketIthOwnedWinning(result[0].toString());
+    setAmountIthWinning(result[1]);
   }
 
   const [userAddress, setUserAddress] = useState('');
@@ -327,7 +348,12 @@ function App() {
   const [ownedIndex, setOwnedIndex] = useState('');
   const [ticketIfWon, setTicketIfWon] = useState('')
   const [ticketWinAmount, setTicketWinAmount] = useState('');
+  const [ticketCollectPrize, setTicketCollectPrize] = useState('')
 
+  const [lotteryNoIthWinning, setLotteryNoIthWinning] = useState('');
+  const [ticketIthWinning, setTicketIthOwnedWinning] = useState('');
+  const [amountIthWinning, setAmountIthWinning] = useState('');
+  const [winnerIndex, setWinnerIndex] = useState('');
 
 
   return (
@@ -488,7 +514,7 @@ function App() {
                 />
               </label>
               <label>
-                Ticket index:
+                Index:
                 <input 
                   type="number" 
                   value={ownedIndex}
@@ -515,8 +541,51 @@ function App() {
                 </label>
                 <input type="submit" value="Check if ticket won" />
                 <label>
-                  Amount won: {ticketIthOwned}
+                  Amount won: {ticketWinAmount}
                 </label>
+              </form>
+            </div>
+            <div>
+              <form onSubmit={collectTicketPrizeHandler}>
+                <label>
+                  Ticket No:
+                  <input 
+                    type="number" 
+                    value={ticketCollectPrize}
+                    required={true}
+                    onChange={(e) => setTicketCollectPrize(e.target.value)}
+                  />
+                </label>
+                <input type="submit" value="Collect ticket prize" />
+              </form>
+            </div>
+            <div>
+              <form onSubmit={getIthWinningTicketHandler}>
+              <label>
+                Lottery No:
+                <input 
+                  type="number" 
+                  value={lotteryNoIthWinning}
+                  required={true}
+                  onChange={(e) => setLotteryNoIthWinning(e.target.value)}
+                />
+              </label>
+              <label>
+                Winner index:
+                <input 
+                  type="number" 
+                  value={winnerIndex}
+                  required={true}
+                  onChange={(e) => setWinnerIndex(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Get ith winning ticket" />
+              <label>
+                Ticket No: {ticketIthWinning}
+              </label>
+              <label>
+                Amount: {amountIthWinning}
+              </label>
               </form>
             </div>
             <p id="deployedAddress" className="text-gray-600"></p>
