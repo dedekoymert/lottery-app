@@ -166,7 +166,8 @@ function App() {
     await lotteryContract.collectTicketRefund(ticketRefund);   
   }
 
-  async function revealRandomNumberHandler() {
+  async function revealRandomNumberHandler(event) {
+    event.preventDefault();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
        
     await provider.send("eth_requestAccounts",[]);
@@ -400,7 +401,7 @@ function App() {
               <label>
                 Random number:
                 <input 
-                  type="number" 
+                  type="text" 
                   value={revealedRandomNumber}
                   required={true}
                   onChange={(e) => setRevealedRandomNumber(e.target.value)}
