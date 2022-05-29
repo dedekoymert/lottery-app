@@ -144,31 +144,26 @@ function App() {
   }
 
 
-  async function approveHandler() {
+  async function approveHandler(event) {
+    event.preventDefault();
+    if (window.web3) {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+      //await provider.send("eth_requestAccounts",[]);
+        const signer =   provider.getSigner();
 
-      if (window.web3) {
-        try {
-          
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-       
-        //await provider.send("eth_requestAccounts",[]);
-          const signer =   provider.getSigner();
+        const tlContract = new ethers.Contract(tlAddress, tlAbi, signer);
+  
+  
+        await tlContract.approve(lotteryAddress, transferApproveAmount); 
 
-          const tlContract = new ethers.Contract(tlAddress, tlAbi, signer);
-   
-   
-          await tlContract.approve(lotteryAddress, "1000000000000000000000"); 
-
-         
-
-        } catch (error) {
+      } catch (error) {
         console.error(error);
       }
     } else {
       alert("Change the error");
     }
-
-
   }
   async function depositTrial() {
 
@@ -199,31 +194,26 @@ function App() {
   //  await lotteryContract.depositTl(depositAmount);
   }
 
-  async function depositHandler() {
+  async function depositHandler(event) {
+    event.preventDefault();
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log("chech1 ", provider);
 
     //await provider.send("eth_requestAccounts",[]);
     const signer =  provider.getSigner();
 
-    console.log("chech2 ", provider);
-
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
 
-   await lotteryContract.depositTL("10"); 
+    await lotteryContract.depositTL(depositAmount); 
    
-    console.log("amonut ", this.depositAmount);
-
-   console.log("we got into this point-3 in approve")
-
   //  await lotteryContract.depositTl(depositAmount);
   }
 
-  async function withdrawHandler() {
+  async function withdrawHandler(event) {
+    event.preventDefault();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
        
-    await provider.send("eth_requestAccounts",[]);
+    // await provider.send("eth_requestAccounts",[]);
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
@@ -244,16 +234,17 @@ function App() {
     setRandomNumber(number.toString());
   }
   
-  async function hashNumberHandler() {
+  async function hashNumberHandler(event) {
+    event.preventDefault()
     const provider = new ethers.providers.Web3Provider(window.ethereum);
        
-    await provider.send("eth_requestAccounts",[]);
+    // await provider.send("eth_requestAccounts",[]);
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     if(randomNumber !== undefined) {
       const hash = await lotteryContract.hash_your_random_number(randomNumber);
-      setHashedNumber(hash);
+      setHashedNumber(hash.toString());
     }
   }
 
@@ -289,27 +280,27 @@ function App() {
     await lotteryContract.revealRndNumber(revealedRandomNumber);   
   }
 
-  async function getLastOwnedHandler() {
+  async function getLastOwnedHandler(event) {
+    event.preventDefault();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
        
-    await provider.send("eth_requestAccounts",[]);
     const signer =  provider.getSigner();
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
-    const ticket = await lotteryContract.revealRndNumber(revealedRandomNumber);   
-    setTicketLastOwned(ticket);
+    const ticket = await lotteryContract.getLastOwnedTicketNo(0);
+    setTicketLastOwned(ticket.toString());
   }
 
-  const [userAddress, setUserAddress] = useState();
+  const [userAddress, setUserAddress] = useState('');
   const [transferApproveAmount, setTransferApproveAmount] = useState('');
-  const [depositAmount, setDepositAmount] = useState();
-  const [withdrawAmount, setWithdrawAmount] = useState();
-  const [randomNumber, setRandomNumber] = useState();
-  const [hashedNumber, setHashedNumber] = useState();
-  const [ticketRefund, setTicketRefund] = useState();
-  const [revealedRandomNumber, setRevealedRandomNumber] = useState();
-  const [lotteryNoLastOwned, setLotteryNoLastOwned] = useState();
-  const [ticketLastOwned, setTicketLastOwned] = useState();
+  const [depositAmount, setDepositAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [randomNumber, setRandomNumber] = useState('');
+  const [hashedNumber, setHashedNumber] = useState('');
+  const [ticketRefund, setTicketRefund] = useState('');
+  const [revealedRandomNumber, setRevealedRandomNumber] = useState('');
+  const [lotteryNoLastOwned, setLotteryNoLastOwned] = useState('');
+  const [ticketLastOwned, setTicketLastOwned] = useState('');
 
 
   return (
