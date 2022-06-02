@@ -207,7 +207,7 @@ function App() {
 
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     const winAmount = await lotteryContract.checkIfTicketWon(ticketIfWon);  
-    setTicketWinAmount(winAmount);
+    setTicketWinAmount(winAmount.toString());
   }
 
   async function collectTicketPrizeHandler(event) {
@@ -229,7 +229,7 @@ function App() {
     const lotteryContract = new ethers.Contract(lotteryAddress, lotteryAbi, signer);
     const result = await lotteryContract.getIthWinningTicket(winnerIndex, lotteryNoIthWinning);
     setTicketIthOwnedWinning(result[0].toString());
-    setAmountIthWinning(result[1]);
+    setAmountIthWinning(result[1].toString());
   }
 
   async function getLotteryNoHandler(event) {
